@@ -1,4 +1,4 @@
-package org.sklsft.generator.skeletons.core.commands.api.interfaces;
+package org.sklsft.generator.skeletons.rest.commands;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,13 +12,13 @@ import org.sklsft.generator.model.metadata.RelationType;
 import org.sklsft.generator.model.metadata.SelectionMode;
 import org.sklsft.generator.skeletons.commands.impl.typed.JavaFileWriteCommand;
 
-public class BaseServiceInterfaceFileWriteCommand extends JavaFileWriteCommand {
+public class SpringRestBaseControllerCommand extends JavaFileWriteCommand {
 
 private Bean bean;
 	
-	public BaseServiceInterfaceFileWriteCommand(Bean bean) {
-		super(bean.myPackage.model.project.workspaceFolder + File.separator + bean.myPackage.model.project.projectName + "-api" + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator
-				+ bean.myPackage.baseServiceInterfacePackageName.replace(".", File.separator), bean.baseServiceInterfaceName);
+	public SpringRestBaseControllerCommand(Bean bean) {
+		super(bean.myPackage.model.project.workspaceFolder + File.separator + bean.myPackage.model.project.projectName + "-rest" + File.separator + "src" + File.separator + "main" + File.separator + "java" + File.separator
+				+ bean.myPackage.baseRestControllerPackageName.replace(".", File.separator), bean.baseRestControllerClassName);
 
 		this.bean = bean;
 	}
@@ -29,9 +29,11 @@ private Bean bean;
 		javaImports.add("import java.util.Date;");
 		javaImports.add("import java.math.BigDecimal;");
 		javaImports.add("import java.util.List;");
+		javaImports.add("import javax.inject.Inject;");
 		javaImports.add("import org.sklsft.commons.api.model.ScrollForm;");
 		javaImports.add("import org.sklsft.commons.api.model.ScrollView;");
 		javaImports.add("import org.sklsft.commons.api.model.SelectItem;");
+		javaImports.add("import " + this.bean.myPackage.serviceInterfacePackageName + "." + this.bean.serviceInterfaceName + ";");
 		javaImports.add("import " + this.bean.myPackage.basicViewsPackageName + "." + this.bean.basicViewBean.className + ";");
 		javaImports.add("import " + this.bean.myPackage.fullViewsPackageName + "." + this.bean.fullViewBean.className + ";");
 		javaImports.add("import " + this.bean.myPackage.formsPackageName + "." + this.bean.formBean.className + ";");
@@ -46,59 +48,70 @@ private Bean bean;
 		
 		for (OneToManyComponent oneToManyComponent : this.bean.oneToManyComponentList) {
 			Bean currentBean = oneToManyComponent.referenceBean;
+			javaImports.add("import " + this.bean.myPackage.serviceInterfacePackageName + "." + this.bean.serviceInterfaceName + ";");
 			javaImports.add("import " + currentBean.myPackage.basicViewsPackageName + "." + currentBean.basicViewBean.className + ";");
 			javaImports.add("import " + currentBean.myPackage.fullViewsPackageName + "." + currentBean.fullViewBean.className + ";");
 			javaImports.add("import " + currentBean.myPackage.formsPackageName + "." + currentBean.formBean.className + ";");
 			javaImports.add("import " + currentBean.myPackage.filtersPackageName + "." + currentBean.basicViewBean.filterClassName + ";");
 			javaImports.add("import " + currentBean.myPackage.sortingsPackageName + "." + currentBean.basicViewBean.sortingClassName + ";");
 		}
+		
+		javaImports.add("import org.springframework.web.bind.annotation.RequestBody;");
+		javaImports.add("import org.springframework.web.bind.annotation.RequestMapping;");
+		javaImports.add("import org.springframework.web.bind.annotation.RequestMethod;");
+		javaImports.add("import org.springframework.web.bind.annotation.ResponseBody;");
 
 	}
 
 	@Override
 	protected void writeContent() throws IOException {
 		
-		writeLine("package " + this.bean.myPackage.baseServiceInterfacePackageName + ";");
+		writeLine("package " + this.bean.myPackage.baseRestControllerPackageName + ";");
 		skipLine();
 		
 		writeImports();
 		skipLine();
 		
 		writeLine("/**");
-		writeLine(" * auto generated base service interface file"); 
+		writeLine(" * auto generated base rest controller file"); 
 		writeLine(" * <br/>no modification should be done to this file");
 		writeLine(" * <br/>processed by skeleton-generator");
 		writeLine(" */");
-		writeLine("public interface " + this.bean.baseServiceInterfaceName + " {");
-		skipLine();		
-		
+		writeLine("public class " + this.bean.baseRestControllerClassName + " {");
+		skipLine();
+		writeLine("/*");
+		writeLine(" * services injected by spring");
+		writeLine(" */");
+		writeLine("@Inject");
+		writeLine("protected " + this.bean.serviceInterfaceName + " " + this.bean.serviceObjectName + ";");
+		skipLine();
 		
 		if (this.bean.selectable) {
 			createGetOptions();
 		}
-		createLoadObjectList();
-		createScroll();
-		createLoadObject();
-		if (bean.cardinality>0) {
-			createFindObject();
-		}
-		createLoadOneToOneComponent();
-		createLoadOneToManyComponentList();
-		createScrollOneToManyComponent();
-		createLoadOneToManyComponent();
-		createCreateObject();
-		createCreateOneToManyComponent();
-		createSaveObject();
-		createSaveOneToOneComponent();
-		createSaveOneToManyComponent();
-		createUpdateObject();
-		createUpdateUniqueComponent();
-		createUpdateOneToManyComponent();
-		createDeleteObject();
-		createDeleteOneToOneComponent();
-		createDeleteOneToManyComponent();
-		createDeleteObjectList();
-		createDeleteOneToManyComponentList();
+//		createLoadObjectList();
+//		createScroll();
+//		createLoadObject();
+//		if (bean.cardinality>0) {
+//			createFindObject();
+//		}
+//		createLoadOneToOneComponent();
+//		createLoadOneToManyComponentList();
+//		createScrollOneToManyComponent();
+//		createLoadOneToManyComponent();
+//		createCreateObject();
+//		createCreateOneToManyComponent();
+//		createSaveObject();
+//		createSaveOneToOneComponent();
+//		createSaveOneToManyComponent();
+//		createUpdateObject();
+//		createUpdateUniqueComponent();
+//		createUpdateOneToManyComponent();
+//		createDeleteObject();
+//		createDeleteOneToOneComponent();
+//		createDeleteOneToManyComponent();
+//		createDeleteObjectList();
+//		createDeleteOneToManyComponentList();
 
 		writeLine("}");
 
@@ -110,16 +123,20 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * get options");
 			writeLine(" */");
-			writeLine("List<SelectItem> getOptions();");
-			writeLine("public static final String GET_OPTIONS_URL = \"/" + bean.urlPiece + "/options\";");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".GET_OPTIONS_URL}, method = RequestMethod.GET)");
+			writeLine("public @ResponseBody List<SelectItem> getOptions() {");
+			writeLine("return " + bean.serviceObjectName + ".getOptions();");
+			writeLine("}");
 			skipLine();
 		}
 		if (bean.selectionBehavior.selectionMode.equals(SelectionMode.AUTO_COMPLETE)) {			
 			writeLine("/**");
 			writeLine(" * search options");
 			writeLine(" */");
-			writeLine("List<SelectItem> searchOptions(String arg);");
-			writeLine("public static final String SEARCH_OPTIONS_URL = \"/" + bean.urlPiece + "/options/search\";");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".SEARCH_OPTIONS_URL }, method = RequestMethod.POST)");
+			writeLine("public @ResponseBody List<SelectItem> searchOptions(@RequestBody String arg) {");
+			writeLine("return " + bean.serviceObjectName + ".searchOptions(arg);");
+			writeLine("}");
 			skipLine();
 		}
 	}
