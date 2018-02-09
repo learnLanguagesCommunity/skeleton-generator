@@ -96,21 +96,21 @@ private Bean bean;
 //		if (bean.cardinality>0) {
 //			createFindObject();
 //		}
-//		createLoadOneToOneComponent();
-//		createLoadOneToManyComponentList();
-//		createScrollOneToManyComponent();
-//		createLoadOneToManyComponent();
+		createLoadOneToOneComponent();
+		createLoadOneToManyComponentList();
+		createScrollOneToManyComponent();
+		createLoadOneToManyComponent();
 		createCreateObject();
-//		createCreateOneToManyComponent();
+		createCreateOneToManyComponent();
 		createSaveObject();
-//		createSaveOneToOneComponent();
-//		createSaveOneToManyComponent();
+		createSaveOneToOneComponent();
+		createSaveOneToManyComponent();
 		createUpdateObject();
-//		createUpdateUniqueComponent();
-//		createUpdateOneToManyComponent();
+		createUpdateUniqueComponent();
+		createUpdateOneToManyComponent();
 		createDeleteObject();
-//		createDeleteOneToOneComponent();
-//		createDeleteOneToManyComponent();
+		createDeleteOneToOneComponent();
+		createDeleteOneToManyComponent();
 //		createDeleteObjectList();
 //		createDeleteOneToManyComponentList();
 
@@ -225,8 +225,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * load one to one component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine(currentBean.fullViewBean.className + " load" + currentBean.className + "(Long id);");
-			skipLine();
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".GET_" + currentBean.table.originalName + "_URL}, method = RequestMethod.GET)");
+			writeLine("public @ResponseBody " + currentBean.fullViewBean.className + " load" + currentBean.className + "(@PathVariable(\"id\") Long id) {");
+			writeLine("return " + bean.serviceObjectName + ".load" + currentBean.className + "(id);");
+			writeLine("}");
 		}
 	}
 
@@ -237,8 +239,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * load one to many component " + currentBean.objectName + " list");
 			writeLine(" */");
-			writeLine("List<" + currentBean.basicViewBean.className + "> load" + currentBean.className + "List(Long id);");
-			skipLine();
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".GET_" + currentBean.table.originalName + "_LIST_URL}, method = RequestMethod.GET)");
+			writeLine("public @ResponseBody List<" + currentBean.basicViewBean.className + "> load" + currentBean.className + "List(@PathVariable(\"id\") Long id) {");
+			writeLine("return " + bean.serviceObjectName + ".load" + currentBean.className + "List(id);");
+			writeLine("}");
 		}
 	}
 	
@@ -249,8 +253,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * scroll one to many component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine("ScrollView<" + currentBean.basicViewBean.className + "> scroll" + currentBean.className + " (Long " + bean.objectName + "Id, ScrollForm<" + currentBean.basicViewBean.filterClassName + ", " + currentBean.basicViewBean.sortingClassName + "> form);");
-			skipLine();
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".SCROLL_" + currentBean.table.originalName + "_URL}, method = RequestMethod.POST)");
+			writeLine("public @ResponseBody ScrollView<" + currentBean.basicViewBean.className + "> scroll" + currentBean.className + " (@PathVariable(\"" + bean.objectName + "Id\") Long " + bean.objectName + "Id, @RequestBody ScrollForm<" + currentBean.basicViewBean.filterClassName + ", " + currentBean.basicViewBean.sortingClassName + "> form) {");
+			writeLine("return " + bean.serviceObjectName + ".scroll" + currentBean.className + "(" + bean.objectName + "Id, form);");
+			writeLine("}");
 		}
 	}
 
@@ -261,8 +267,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * load one to many component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine(currentBean.fullViewBean.className + " load" + currentBean.className + "(Long " + currentBean.objectName + "Id,Long id);");			
-			skipLine();
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".GET_" + currentBean.table.originalName + "_URL}, method = RequestMethod.GET)");
+			writeLine("public @ResponseBody " + currentBean.fullViewBean.className + " load" + currentBean.className + "(@PathVariable(\"id\") Long id) {");
+			writeLine("return " + bean.serviceObjectName + ".load" + currentBean.className + "(id);");
+			writeLine("}");
 		}
 	}
 
@@ -284,7 +292,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * create one to many component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine(currentBean.fullViewBean.className + " create" + currentBean.className + "(Long id);");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".GET_NEW_" + currentBean.table.originalName + "_URL}, method = RequestMethod.GET)");
+			writeLine("public @ResponseBody " +  currentBean.fullViewBean.className + " create" + currentBean.className + "(@PathVariable(\"id\") Long id) {");
+			writeLine("return " + bean.serviceObjectName + ".create" + currentBean.className + "(id);");
+			writeLine("}");
 			skipLine();
 		}
 	}
@@ -294,8 +305,8 @@ private Bean bean;
 		writeLine(" * save object");		
 		writeLine(" */");
 		writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".SAVE_URL}, method = RequestMethod.POST)");
-		writeLine("public @ResponseBody Long save(@RequestBody " + this.bean.formBean.className + " " + this.bean.formBean.objectName + ") {");
-		writeLine("return " + bean.serviceObjectName + ".save(" + this.bean.formBean.objectName + ");");
+		writeLine("public @ResponseBody Long save(@RequestBody " + this.bean.formBean.className + " form) {");
+		writeLine("return " + bean.serviceObjectName + ".save(form);");
 		writeLine("}");
 		skipLine();
 		
@@ -309,8 +320,8 @@ private Bean bean;
 					writeLine(" * save object from parent " + parentBean.className);		
 					writeLine(" */");
 					writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".SAVE_FROM_" + parentBean.table.originalName + "_URL}, method = RequestMethod.POST)");
-					writeLine("public @ResponseBody Long saveFrom" + parentBean.className + "(@PathVariable(\"" + parentBean.objectName + "Id\") Long " + parentBean.objectName + "Id, @RequestBody " + this.bean.formBean.className + " " + this.bean.formBean.objectName + ") {");
-					writeLine("return " + bean.serviceObjectName + ".save(" + this.bean.formBean.objectName + ");");
+					writeLine("public @ResponseBody Long saveFrom" + parentBean.className + "(@PathVariable(\"" + parentBean.objectName + "Id\") Long " + parentBean.objectName + "Id, @RequestBody " + this.bean.formBean.className + " form) {");
+					writeLine("return " + bean.serviceObjectName + ".saveFrom" + parentBean.className + "(" +  parentBean.objectName + "Id, form);");
 					writeLine("}");
 					skipLine();
 				}
@@ -325,7 +336,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * save one to one component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine("public void save" + currentBean.className + "(Long id, " + currentBean.formBean.className + " " + currentBean.formBean.objectName + ");");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".SAVE_" + currentBean.table.originalName + "_URL}, method = RequestMethod.POST)");
+			writeLine("public void save" + currentBean.className + "(@PathVariable(\"id\") Long id, @RequestBody " + currentBean.formBean.className + " form) {");
+			writeLine(bean.serviceObjectName + ".save" + currentBean.className + "(id, form);");
+			writeLine("}");
 			skipLine();
 		}
 	}
@@ -337,7 +351,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * save one to many component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine("void save" + currentBean.className + "(Long id, " + currentBean.formBean.className + " " + currentBean.formBean.objectName + ");");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".SAVE_" + currentBean.table.originalName + "_URL}, method = RequestMethod.POST)");
+			writeLine("public void save" + currentBean.className + "(@PathVariable(\"id\") Long id, @RequestBody " + currentBean.formBean.className + " form) {");
+			writeLine(bean.serviceObjectName + ".save" + currentBean.className + "(id, form);");
+			writeLine("}");
 			skipLine();
 		}
 	}
@@ -347,8 +364,8 @@ private Bean bean;
 		writeLine(" * update object");		
 		writeLine(" */");
 		writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".UPDATE_URL}, method = RequestMethod.PUT)");
-		writeLine("public void update(@PathVariable(\"id\") Long id, @RequestBody " + this.bean.formBean.className + " " + this.bean.formBean.objectName + ") {");
-		writeLine(bean.serviceObjectName + ".update(id, " + this.bean.formBean.objectName + ");");
+		writeLine("public void update(@PathVariable(\"id\") Long id, @RequestBody " + this.bean.formBean.className + " form) {");
+		writeLine(bean.serviceObjectName + ".update(id, form);");
 		writeLine("}");
 		skipLine();
 	}
@@ -360,7 +377,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * update one to one component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine("void update" + currentBean.className + "(Long id, " + currentBean.formBean.className + " " + currentBean.formBean.objectName + ");");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".UPDATE_" + currentBean.table.originalName + "_URL}, method = RequestMethod.PUT)");
+			writeLine("void update" + currentBean.className + "(Long id, " + currentBean.formBean.className + " form) {");
+			writeLine(bean.serviceObjectName + ".update" + currentBean.className + "(id, form);");
+			writeLine("}");
 			skipLine();
 		}
 	}
@@ -372,7 +392,10 @@ private Bean bean;
 			writeLine("/**");
 			writeLine(" * update one to many component " + currentBean.objectName);
 			writeLine(" */");
-			writeLine("void update" + currentBean.className + "(Long id, " + currentBean.formBean.className + " " + currentBean.formBean.objectName + ");");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".UPDATE_" + currentBean.table.originalName + "_URL}, method = RequestMethod.PUT)");
+			writeLine("void update" + currentBean.className + "(Long id, " + currentBean.formBean.className + " form) {");
+			writeLine(bean.serviceObjectName + ".update" + currentBean.className + "(id, form);");
+			writeLine("}");
 			skipLine();
 		}
 	}
@@ -395,7 +418,10 @@ private Bean bean;
 			writeLine("/**");			
 			writeLine(" * delete one to one component " + currentBean.objectName);			
 			writeLine(" */");
-			writeLine("public void delete" + currentBean.className + "(Long id);");			
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".DELETE_" + currentBean.table.originalName + "_URL}, method = RequestMethod.DELETE)");
+			writeLine("public void delete" + currentBean.className + "(@PathVariable(\"id\")Long id) {");			
+			writeLine(bean.serviceObjectName + ".delete" + currentBean.className + "(id);");
+			writeLine("}");
 			skipLine();
 		}
 	}
@@ -407,7 +433,10 @@ private Bean bean;
 			writeLine("/**");			
 			writeLine(" * delete one to many component " + currentBean.objectName);			
 			writeLine(" */");
-			writeLine("void delete" + currentBean.className + "(Long id);");
+			writeLine("@RequestMapping(value = {" + bean.serviceInterfaceName + ".DELETE_" + currentBean.table.originalName + "_URL}, method = RequestMethod.DELETE)");
+			writeLine("public void delete" + currentBean.className + "(@PathVariable(\"id\")Long id) {");			
+			writeLine(bean.serviceObjectName + ".delete" + currentBean.className + "(id);");
+			writeLine("}");
 			skipLine();
 		}
 	}
